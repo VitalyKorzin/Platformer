@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(Animator))]
+[RequireComponent(typeof(BoxCollider2D))]
 public class CharacterMovement : MonoBehaviour
 {
     [SerializeField] private float _runSpeed;
     [SerializeField] private float _jumpForce;
+    [SerializeField] private LayerMask _jumpableGround;
 
-    private readonly float _availableDistanceFromGroundToJump = 0.01f;
+    private readonly float _availableDistanceFromGroundToJump = 0.1f;
+    private BoxCollider2D _boxCollider;
     private SpriteRenderer _spriteRenderer;
     private Rigidbody2D _rigidbody;
     private Animator _animator;
@@ -14,6 +17,7 @@ public class CharacterMovement : MonoBehaviour
 
     private void Awake()
     {
+        _boxCollider = GetComponent<BoxCollider2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
@@ -43,7 +47,7 @@ public class CharacterMovement : MonoBehaviour
             _rigidbody.AddForce(transform.up * _jumpForce, ForceMode2D.Impulse);
     }
 
-    private void SetState(State state) => _animator.SetInteger("State", (int)state);
+    private void SetState(State state) => _animator.SetInteger(AnimatorCharacterMovement.Params.State, (int)state);
 
-    private bool IsOnGround() => Mathf.Abs(_rigidbody.velocity.y) < _availableDistanceFromGroundToJump;
+    private bool IsOnGround() => Physics2D.BoxCast(_boxCollider.bounds.center, _boxCollider.bounds.size, 0f, Vector2.down, _availableDistanceFromGroundToJump, _jumpableGround);
 }

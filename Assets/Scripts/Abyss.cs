@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
+using IJunior.TypedScenes;
 
 public class Abyss : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.TryGetComponent(out Character character))
-            SceneManager.LoadScene("Level");
+            Level.Load();
         else
             Destroy(collision.gameObject);
     }
